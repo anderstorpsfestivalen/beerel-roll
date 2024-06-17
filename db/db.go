@@ -152,10 +152,10 @@ func (d *DBobject) GetRowItemByPid(pid string) error {
 	return err
 }
 
-func (d *DBobject) Insert(name string, pid string, volume float64) error {
+func (d *DBobject) Insert(name string, pid string, volume float64, imageUrl string) error {
 	dbQuery := `
-		INSERT INTO inventory (name, product_number, volume, consumed, orderable) VALUES (
-			$1, $2, $3, $4, $5
+		INSERT INTO inventory (name, product_number, volume, consumed, orderable, image_url) VALUES (
+			$1, $2, $3, $4, $5, $6
 		)`
 
 	p, err := strconv.ParseInt(pid, 10, 64)
@@ -169,6 +169,7 @@ func (d *DBobject) Insert(name string, pid string, volume float64) error {
 		volume,
 		"false",
 		"true",
+		imageUrl,
 	)
 
 	return err

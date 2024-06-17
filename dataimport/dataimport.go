@@ -10,20 +10,23 @@ import (
 )
 
 type Systemet struct {
-	All []struct {
-		ProductNumber            string  `json:"productNumber"`
-		ProductNameBold          string  `json:"productNameBold"`
-		RestrictedParcelQuantity int     `json:"restrictedParcelQuantity"`
-		AssortmentText           string  `json:"assortmentText"`
-		Volume                   float64 `json:"volume"`
-	} `json:"all"`
-	Store []struct {
-		ProductNumber            string  `json:"productNumber"`
-		ProductNameBold          string  `json:"productNameBold"`
-		RestrictedParcelQuantity int     `json:"restrictedParcelQuantity"`
-		AssortmentText           string  `json:"assortmentText"`
-		Volume                   float64 `json:"volume"`
-	} `json:"store"`
+	All   []Item `json:"all"`
+	Store []Item `json:"store"`
+}
+
+type Item struct {
+	ProductNumber            string  `json:"productNumber"`
+	ProductNameBold          string  `json:"productNameBold"`
+	RestrictedParcelQuantity int     `json:"restrictedParcelQuantity"`
+	AssortmentText           string  `json:"assortmentText"`
+	Volume                   float64 `json:"volume"`
+	Images                   []Image `j™son:"images"`
+}
+
+type Image struct {
+	ImageURL string      `json:"imageUrl"`
+	FileType interface{} `json:"fileType"`
+	Size     interface{} `json:"size"`
 }
 
 func DbSetup(d *db.DBobject) error {
@@ -52,7 +55,7 @@ func DbSetup(d *db.DBobject) error {
 	// Insert All slice into DB
 	for _, product := range data.All {
 		if product.RestrictedParcelQuantity == 0 {
-			err := d.Insert(product.ProductNameBold, product.ProductNumber, product.Volume)
+			err := d.Insert(product.ProductNameBold, product.ProductNumber, product.Volume, product.Images[0].ImageURL)
 			if err != nil {
 				fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
 			}
@@ -61,7 +64,7 @@ func DbSetup(d *db.DBobject) error {
 
 	// Update inventory with store only items
 	for _, product := range data.Store {
-		err := d.Insert(product.ProductNameBold, product.ProductNumber, product.Volume)
+		err := d.Insert(product.ProductNameBold, product.ProductNumber, product.Volume, product.Images[0].ImageURL)
 		if err != nil {
 			fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
 		}
