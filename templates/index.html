@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Random Name Generator</title>
+		<!-- Bootstrap CSS -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+			crossorigin="anonymous"
+		/>
+		<style>
+			#recent-container {
+				top: 100px;
+			}
+		</style>
+		<script>
+			let selectedBeer = null;
+
+			async function getRandomName() {
+				try {
+					const response = await fetch("/random-beer");
+					const data = await response.json();
+
+					selectedBeer = data;
+
+					document.getElementById("beername").innerText =
+						selectedBeer.name + " - " + selectedBeer.volume/10 + " cl";
+
+					setState("selected");
+				} catch (error) {
+					console.error("Error fetching random beer:", error);
+				}
+			}
+
+			function setState(state) {
+				switch (state) {
+					case "start":
+						document.getElementById("randombtn").style.display =
+							"inline-block";
+						document.getElementById("beer-select").style.display =
+							"none";
+						break;
+					case "selected":
+						//Hide random button
+						document.getElementById("randombtn").style.display =
+							"none";
+
+						// Show select beer
+						document.getElementById("beer-select").style.display =
+							"block";
+						break;
+					default:
+				}
+			}
+
+			async function acceptName() {
+				try {
+					const response = await fetch("/accept", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							pid: selectedBeer.product_number,
+						}),
+					});
+
+					selectedBeer = null;
+					const data = await response.json();
+
+					if (response.status == 200) {
+						await getRecentBeers();
+						setState("start");
+					} else {
+						alert("Failed to accept the beer.");
+					}
+				} catch (error) {
+					console.error("Error accepting the name:", error);
+					alert("Failed to accept the name.");
+				}
+			}
+
+			async function getRecentBeers() {
+				try {
+					const response = await fetch("/recent");
+					const data = await response.json();
+
+					const recentList = document.getElementById("recent-list");
+
+					// Clear
+					recentList.innerHTML = "";
+
+					data.forEach((beer) => {
+						const listItem = document.createElement("li");
+						listItem.classList.add("list-group-item");
+						listItem.textContent = beer.name + " - " + beer.volume/10 + " cl";;
+						recentList.appendChild(listItem);
+					});
+				} catch (error) {
+					console.error("Error fetching random beer:", error);
+				}
+			}
+
+			function declineName() {
+				setState("start");
+			}
+
+			document.addEventListener("DOMContentLoaded", async () => {
+				try {
+					await getRecentBeers();
+				} catch (error) {
+					console.error("Error initializing recent beers:", error);
+				}
+			});
+		</script>
+	</head>
+	<body class="bg-light">
+		<div class="container-fluid py-5 text-center">
+			<h1 class="mb-4">Random Beer Generator</h1>
+
+			<button
+				class="btn btn-primary"
+				id="randombtn"
+				onclick="getRandomName()"
+			>
+				Get Random Beer
+			</button>
+
+			<div class="card" style="display: none" id="beer-select">
+				<div class="card-body">
+					<h3 id="beername">BEER NAME</h3>
+					<div class="btn-group-vertical" style="width: 100%">
+						<button
+							class="btn btn-block btn-success mr-2"
+							onclick="acceptName()"
+						>
+							DRINK
+						</button>
+						<button
+							class="btn btn-block btn-danger"
+							onclick="declineName()"
+						>
+							Decline
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div div class="card" id="recent-container">
+				<div class="card-body">
+					<h3>Recent Beers</h3>
+					<ul class="list-group" id="recent-list"></ul>
+				</div>
+			</div>
+		</div>
+
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+			crossorigin="anonymous"
+		></script>
+	</body>
+</html>

@@ -1,0 +1,8 @@
+CREATE TABLE "inventory" (
+    name TEXT,
+    product_number INTEGER PRIMARY KEY,
+    volume INTEGER,
+    orderable BOOLEAN,
+    consumed BOOLEAN,
+    consumed_time DATETIME
+);
