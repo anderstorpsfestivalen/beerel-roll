@@ -26,8 +26,14 @@
 
 					selectedBeer = data;
 
+					document.getElementById("beerimg").src =
+						selectedBeer.image_url;
+
 					document.getElementById("beername").innerText =
-						selectedBeer.name + " - " + selectedBeer.volume/10 + " cl";
+						selectedBeer.name +
+						" - " +
+						selectedBeer.volume / 10 +
+						" cl";
 
 					setState("selected");
 				} catch (error) {
@@ -37,17 +43,26 @@
 
 			function setState(state) {
 				switch (state) {
+					// Default state
 					case "start":
 						document.getElementById("randombtn").style.display =
 							"inline-block";
+						document.getElementById(
+							"recent-container"
+						).style.display = "block";
 						document.getElementById("beer-select").style.display =
 							"none";
 						break;
+
+					// This is the state when a beer is selected
 					case "selected":
 						//Hide random button
 						document.getElementById("randombtn").style.display =
 							"none";
-
+						// Hide recent container
+						document.getElementById(
+							"recent-container"
+						).style.display = "none";
 						// Show select beer
 						document.getElementById("beer-select").style.display =
 							"block";
@@ -96,7 +111,8 @@
 					data.forEach((beer) => {
 						const listItem = document.createElement("li");
 						listItem.classList.add("list-group-item");
-						listItem.textContent = beer.name + " - " + beer.volume/10 + " cl";;
+						listItem.textContent =
+							beer.name + " - " + beer.volume / 10 + " cl";
 						recentList.appendChild(listItem);
 					});
 				} catch (error) {
@@ -130,6 +146,12 @@
 			</button>
 
 			<div class="card" style="display: none" id="beer-select">
+				<img
+					class="card-img-top"
+					alt="..."
+					id="beerimg"
+					style="height: 300px; width: auto; padding-top: 10px"
+				/>
 				<div class="card-body">
 					<h3 id="beername">BEER NAME</h3>
 					<div class="btn-group-vertical" style="width: 100%">

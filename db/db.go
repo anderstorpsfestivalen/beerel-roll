@@ -22,6 +22,7 @@ type Inventory struct {
 	Orderable     sql.NullBool    `db:"orderable"`
 	Consumed      sql.NullBool    `db:"consumed"`
 	ConsumedTime  sql.NullTime    `db:"consumed_time"`
+	ImageURL      sql.NullString  `db:"image_url"`
 }
 
 type Beer struct {
@@ -29,6 +30,7 @@ type Beer struct {
 	ProductNumber int64        `json:"product_number"`
 	ConsumedTime  sql.NullTime `db:"consumed_time"`
 	Volume        float64      `json:"volume"`
+	ImageURL      string       `json:"image_url"`
 }
 
 func Open() DBobject {
@@ -100,6 +102,7 @@ func (d *DBobject) GetRandBeer() (Beer, error) {
 		ProductNumber: databaseResp.ProductNumber.Int64,
 		ConsumedTime:  databaseResp.ConsumedTime,
 		Volume:        databaseResp.Volume.Float64,
+		ImageURL:      databaseResp.ImageURL.String,
 	}, nil
 }
 
@@ -121,6 +124,7 @@ func (d *DBobject) GetNLastConsumed(n int64) ([]Beer, error) {
 			ProductNumber: beer.ProductNumber.Int64,
 			ConsumedTime:  beer.ConsumedTime,
 			Volume:        beer.Volume.Float64,
+			ImageURL:      beer.ImageURL.String,
 		})
 	}
 
