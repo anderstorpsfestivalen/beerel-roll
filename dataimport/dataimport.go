@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/wbergg/beerel-roll/db"
 )
 
 type Systemet struct {
-	All   []Item `json:"all"`
-	Store []Item `json:"store"`
+	Ordered []Item `json:"ordered"`
+	Store   []Item `json:"store"`
 }
 
 type Item struct {
 	ProductNumber            string  `json:"productNumber"`
+	ProductId                string  `json:"productId"`
 	ProductNameBold          string  `json:"productNameBold"`
 	RestrictedParcelQuantity int     `json:"restrictedParcelQuantity"`
 	AssortmentText           string  `json:"assortmentText"`
@@ -52,10 +54,14 @@ func DbSetup(d *db.DBobject) error {
 		return err
 	}
 
+	// this is a fuuuuuuugly hack but whatever
+	baseImageURL := "https://product-cdn.systembolaget.se/productimages/"
+
 	// Insert All slice into DB
-	for _, product := range data.All {
+	for _, product := range data.Ordered {
 		if product.RestrictedParcelQuantity == 0 {
-			err := d.Insert(product.ProductNameBold, product.ProductNumber, product.Volume, product.Images[0].ImageURL)
+			pid, _ := strconv.ParseInt(product.ProductNumber, 10, 64)
+			err := d.Insert(product.ProductNameBold, pid, product.Volume, baseImageURL+product.ProductId+"/"+product.ProductId+"_500.png")
 			if err != nil {
 				fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
 			}
@@ -64,12 +70,14 @@ func DbSetup(d *db.DBobject) error {
 
 	// Update inventory with store only items
 	for _, product := range data.Store {
-		err := d.Insert(product.ProductNameBold, product.ProductNumber, product.Volume, product.Images[0].ImageURL)
+
+		pid, _ := strconv.ParseInt(product.ProductNumber, 10, 64)
+		err := d.Insert(product.ProductNameBold, pid, product.Volume, product.Images[0].ImageURL+"_500.png")
 		if err != nil {
 			fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
 		}
 		// Set non orderable products to false
-		d.UpdateOrderable(product.ProductNumber)
+		d.UpdateOrderable(pid)
 	}
 
 	return nil

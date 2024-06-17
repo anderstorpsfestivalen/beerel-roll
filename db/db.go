@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -152,20 +151,15 @@ func (d *DBobject) GetRowItemByPid(pid string) error {
 	return err
 }
 
-func (d *DBobject) Insert(name string, pid string, volume float64, imageUrl string) error {
+func (d *DBobject) Insert(name string, pid int64, volume float64, imageUrl string) error {
 	dbQuery := `
 		INSERT INTO inventory (name, product_number, volume, consumed, orderable, image_url) VALUES (
 			$1, $2, $3, $4, $5, $6
 		)`
 
-	p, err := strconv.ParseInt(pid, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = d.db.Exec(dbQuery,
+	_, err := d.db.Exec(dbQuery,
 		name,
-		p,
+		pid,
 		volume,
 		"false",
 		"true",
@@ -175,16 +169,11 @@ func (d *DBobject) Insert(name string, pid string, volume float64, imageUrl stri
 	return err
 }
 
-func (d *DBobject) UpdateOrderable(pid string) error {
+func (d *DBobject) UpdateOrderable(pid int64) error {
 
 	dbQuery := `UPDATE inventory SET orderable = 'false' WHERE product_number = $1`
 
-	p, err := strconv.ParseInt(pid, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = d.db.Exec(dbQuery, p)
+	_, err := d.db.Exec(dbQuery, pid)
 
 	return err
 
