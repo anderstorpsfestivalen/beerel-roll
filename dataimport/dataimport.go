@@ -22,7 +22,7 @@ type Item struct {
 	RestrictedParcelQuantity int     `json:"restrictedParcelQuantity"`
 	AssortmentText           string  `json:"assortmentText"`
 	Volume                   float64 `json:"volume"`
-	Images                   []Image `j™son:"images"`
+	Images                   []Image `json:"images"`
 }
 
 type Image struct {
@@ -61,7 +61,7 @@ func DbSetup(d *db.DBobject) error {
 	for _, product := range data.Ordered {
 		if product.RestrictedParcelQuantity == 0 {
 			pid, _ := strconv.ParseInt(product.ProductNumber, 10, 64)
-			err := d.Insert(product.ProductNameBold, pid, product.Volume, baseImageURL+product.ProductId+"/"+product.ProductId+"_500.png")
+			err := d.Insert(product.ProductNameBold, pid, product.Volume, baseImageURL+product.ProductId+"/"+product.ProductId+"_300.png")
 			if err != nil {
 				fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
 			}
@@ -72,7 +72,7 @@ func DbSetup(d *db.DBobject) error {
 	for _, product := range data.Store {
 
 		pid, _ := strconv.ParseInt(product.ProductNumber, 10, 64)
-		err := d.Insert(product.ProductNameBold, pid, product.Volume, product.Images[0].ImageURL+"_500.png")
+		err := d.Insert(product.ProductNameBold, pid, product.Volume, product.Images[0].ImageURL+"_300.png")
 		if err != nil {
 			fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
 		}

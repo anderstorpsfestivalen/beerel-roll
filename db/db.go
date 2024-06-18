@@ -65,7 +65,6 @@ func initDB(db *sqlx.DB) int {
 			panic(err)
 		}
 		db.MustExec(string(dat))
-		//fmt.Println(dat)
 	}
 	return s1
 }

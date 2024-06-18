@@ -37,7 +37,7 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
-	// Endpoint to get a random name
+	// Endpoint to get a random beer
 	r.GET("/random-beer", func(c *gin.Context) {
 		beer, err := d.GetRandBeer()
 		if err != nil {
@@ -47,7 +47,7 @@ func main() {
 		}
 	})
 
-	// Endpoint to accept a name
+	// Endpoint to accept a roll
 	r.POST("/accept", func(c *gin.Context) {
 		// Declare a variable of the struct type
 		data := ProductNumber
