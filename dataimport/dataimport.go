@@ -19,6 +19,7 @@ type Item struct {
 	ProductNumber            string  `json:"productNumber"`
 	ProductId                string  `json:"productId"`
 	ProductNameBold          string  `json:"productNameBold"`
+	ProductNameThin          string  `json:"productNameThin"`
 	RestrictedParcelQuantity int     `json:"restrictedParcelQuantity"`
 	AssortmentText           string  `json:"assortmentText"`
 	Volume                   float64 `json:"volume"`
@@ -61,9 +62,9 @@ func DbSetup(d *db.DBobject) error {
 	for _, product := range data.Ordered {
 		if product.RestrictedParcelQuantity == 0 {
 			pid, _ := strconv.ParseInt(product.ProductNumber, 10, 64)
-			err := d.Insert(product.ProductNameBold, pid, product.Volume, baseImageURL+product.ProductId+"/"+product.ProductId+"_300.png")
+			err := d.Insert(formatProductName(product.ProductNameBold, product.ProductNameThin), pid, product.Volume, baseImageURL+product.ProductId+"/"+product.ProductId+"_300.png")
 			if err != nil {
-				fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
+				fmt.Println(err, formatProductName(product.ProductNameBold, product.ProductNameThin), product.ProductNumber, product.Volume)
 			}
 		}
 	}
@@ -72,13 +73,20 @@ func DbSetup(d *db.DBobject) error {
 	for _, product := range data.Store {
 
 		pid, _ := strconv.ParseInt(product.ProductNumber, 10, 64)
-		err := d.Insert(product.ProductNameBold, pid, product.Volume, product.Images[0].ImageURL+"_300.png")
+		err := d.Insert(formatProductName(product.ProductNameBold, product.ProductNameThin), pid, product.Volume, product.Images[0].ImageURL+"_300.png")
 		if err != nil {
-			fmt.Println(err, product.ProductNameBold, product.ProductNumber, product.Volume)
+			fmt.Println(err, formatProductName(product.ProductNameBold, product.ProductNameThin), product.ProductNumber, product.Volume)
 		}
 		// Set non orderable products to false
 		d.UpdateOrderable(pid)
 	}
 
 	return nil
+}
+
+func formatProductName(pNameBold string, pNameThin string) string {
+	if pNameThin != "" {
+		return pNameBold + " " + pNameThin
+	}
+	return pNameBold
 }
