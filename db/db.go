@@ -21,16 +21,18 @@ type Inventory struct {
 	Volume        sql.NullFloat64 `db:"volume"`
 	Orderable     sql.NullBool    `db:"orderable"`
 	Consumed      sql.NullBool    `db:"consumed"`
+	Consumed_by   sql.NullString  `db:"consumed_by"`
 	ConsumedTime  sql.NullTime    `db:"consumed_time"`
 	ImageURL      sql.NullString  `db:"image_url"`
 }
 
 type Beer struct {
-	Name          string       `json:"name"`
-	ProductNumber int64        `json:"product_number"`
-	ConsumedTime  sql.NullTime `db:"consumed_time"`
-	Volume        float64      `json:"volume"`
-	ImageURL      string       `json:"image_url"`
+	Name          string         `json:"name"`
+	ProductNumber int64          `json:"product_number"`
+	ConsumedTime  sql.NullTime   `db:"consumed_time"`
+	Consumed_by   sql.NullString `db:"consumed_by"`
+	Volume        float64        `json:"volume"`
+	ImageURL      string         `json:"image_url"`
 }
 
 func Open() DBobject {
@@ -130,11 +132,11 @@ func (d *DBobject) GetNLastConsumed(n int64) ([]Beer, error) {
 	return beerResp, nil
 }
 
-func (d *DBobject) ConsumeBeer(product_number int64) error {
+func (d *DBobject) ConsumeBeer(product_number int64, consumer string) error {
 
-	dbQuery := `UPDATE inventory SET consumed = 'true', consumed_time = CURRENT_TIMESTAMP WHERE product_number = $1`
+	dbQuery := `UPDATE inventory SET consumed = 'true', consumed_by = $1, consumed_time = CURRENT_TIMESTAMP WHERE product_number = $2`
 
-	_, err := d.db.Exec(dbQuery, product_number)
+	_, err := d.db.Exec(dbQuery, consumer, product_number)
 
 	return err
 

@@ -73,6 +73,13 @@
 
 			async function acceptName() {
 				try {
+					const consumed_by = document.getElementById("consumer");
+
+					if (consumed_by.value === "Select consumer") {
+                    	alert("Please select a consumer before accepting.");
+                    	return;
+                	}
+
 					const response = await fetch("/accept", {
 						method: "POST",
 						headers: {
@@ -80,6 +87,7 @@
 						},
 						body: JSON.stringify({
 							pid: selectedBeer.product_number,
+							consumer: consumed_by.value
 						}),
 					});
 
@@ -155,6 +163,16 @@
 				<div class="card-body">
 					<h3 id="beername">BEER NAME</h3>
 					<div class="btn-group-vertical" style="width: 100%">
+						
+						<label>Select user:</label>
+						<select class="form-select mb-3" id="consumer">
+							<option selected>Select consumer</option>
+							<option value="wberg">wberg</option>
+							<option value="summa">summa</option>
+							<option value="coral">coral</option>
+							<option value="jojje3000">jojje3000</option>
+							<option value="alexfoo">alexfoo</option>
+						</select>
 						<button
 							class="btn btn-block btn-success mr-2"
 							onclick="acceptName()"

@@ -9,7 +9,8 @@ import (
 )
 
 var ProductNumber struct {
-	Pid int64 `json:"pid"`
+	Pid      int64  `json:"pid"`
+	Consumer string `json:"consumer"`
 }
 
 func Start(d *db.DBobject) {
@@ -36,11 +37,10 @@ func Start(d *db.DBobject) {
 	r.POST("/accept", func(c *gin.Context) {
 		// Declare a variable of the struct type
 		data := ProductNumber
-
 		// Bind JSON request body to the variable
 		if err := c.ShouldBindJSON(&data); err == nil {
 			// Process the data
-			err := d.ConsumeBeer(data.Pid)
+			err := d.ConsumeBeer(data.Pid, data.Consumer)
 			if err != nil {
 				log.Fatalf("Could not remove from DB: %v", err)
 			}

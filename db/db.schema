@@ -4,6 +4,7 @@ CREATE TABLE "inventory" (
     volume INTEGER,
     orderable BOOLEAN,
     consumed BOOLEAN,
+    consumed_by TEXT,
     consumed_time DATETIME,
     image_url TEXT
 );
