@@ -1,6 +1,6 @@
 # Stage 1
 
-FROM golang:1.22 as builder
+FROM golang:1.22-alpine as builder
 
 WORKDIR /app
 
@@ -8,11 +8,9 @@ COPY go.mod go.sum ./
 
 RUN go mod download
 
-ADD . /app
+COPY . /app
 
-COPY * ./
-
-#RUN apk add --no-cache gcc g++ 
+RUN apk add --no-cache gcc g++ 
 
 RUN CGO_ENABLED=1 go build -o beerserver main.go
 
