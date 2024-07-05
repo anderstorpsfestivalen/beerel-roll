@@ -21,7 +21,7 @@
 
 			async function getRandomName() {
 				try {
-					const response = await fetch("/random-beer");
+					const response = await fetch("random-beer");
 					const data = await response.json();
 
 					selectedBeer = data;
@@ -80,7 +80,7 @@
                     	return;
                 	}
 
-					const response = await fetch("/accept", {
+					const response = await fetch("accept", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
@@ -108,7 +108,7 @@
 
 			async function getRecentBeers() {
 				try {
-					const response = await fetch("/recent");
+					const response = await fetch("recent");
 					const data = await response.json();
 
 					const recentList = document.getElementById("recent-list");
