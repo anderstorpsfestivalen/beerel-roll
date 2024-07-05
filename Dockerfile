@@ -1,6 +1,6 @@
 # Stage 1
 
-FROM golang:1.22-alpine as builder
+FROM golang:latest as builder
 
 WORKDIR /app
 
@@ -10,24 +10,22 @@ RUN go mod download
 
 COPY . /app
 
-RUN apk add --no-cache gcc g++ 
-
-RUN CGO_ENABLED=1 go build -o beerserver main.go
+RUN go build -o beerserver main.go
 
 # Stage 2
 
-FROM alpine:latest AS runner
+FROM debian:latest AS runner
 
 WORKDIR /
 
 RUN mkdir -p /beerel 
-COPY --from=builder /app/beerserver /beerel/beerserver
-COPY --from=builder /app/templates/index.html /beerel/templates/index.html 
-COPY --from=builder /app/dataimport/all.json /beerel/dataimport/all.json
-COPY --from=builder /app/db/db.schema /beerel/db/db.schema
+COPY --from=builder /app/beerserver /beerserver
+COPY --from=builder /app/templates/index.html /templates/index.html 
+COPY --from=builder /app/dataimport/all.json /dataimport/all.json
+COPY --from=builder /app/db/db.schema /db/db.schema
 
 ENV PRODUCTION=true
 
 EXPOSE 8080/tcp
 
-CMD ["/beerel/beerserver"]
+CMD ["./beerserver"]

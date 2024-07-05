@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	fmt.Println("Starting beerel-roll")
+	
 	// Setup db
 	d := db.Open()
 
