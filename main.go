@@ -11,9 +11,17 @@ import (
 
 func main() {
 	fmt.Println("Starting beerel-roll")
-	
+
+	dbPath := "./db/db.sql"
+
+	if os.Getenv("DATABASE_PATH") != "" {
+		 fmt.Println("Using DATABASE_PATH:", os.Getenv("DATABASE_PATH"))
+		 dbPath = os.Getenv("DATABASE_PATH") + "db.sql"
+	}
+
+
 	// Setup db
-	d := db.Open()
+	d := db.Open(dbPath)
 
 	// Check if DB is set up, if not, set it up (first time only)
 	if d.Setup == 0 {

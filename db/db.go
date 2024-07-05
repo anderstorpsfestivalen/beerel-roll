@@ -35,8 +35,8 @@ type Beer struct {
 	ImageURL      string         `json:"image_url"`
 }
 
-func Open() DBobject {
-	db, err := sqlx.Connect("sqlite3", "./db/db.sql")
+func Open(dbPath string) DBobject {
+	db, err := sqlx.Connect("sqlite3", dbPath)
 	if err != nil {
 		panic(err)
 	}

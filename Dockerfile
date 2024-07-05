@@ -16,13 +16,14 @@ RUN go build -o beerserver main.go
 
 FROM debian:latest AS runner
 
-WORKDIR /
-
 RUN mkdir -p /beerel 
-COPY --from=builder /app/beerserver /beerserver
-COPY --from=builder /app/templates/index.html /templates/index.html 
-COPY --from=builder /app/dataimport/all.json /dataimport/all.json
-COPY --from=builder /app/db/db.schema /db/db.schema
+
+WORKDIR /beerel
+
+COPY --from=builder /app/beerserver beerserver
+COPY --from=builder /app/templates/index.html templates/index.html 
+COPY --from=builder /app/dataimport/all.json dataimport/all.json
+COPY --from=builder /app/db/db.schema db/db.schema
 
 ENV PRODUCTION=true
 
