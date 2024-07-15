@@ -21,7 +21,7 @@ type Inventory struct {
 	Volume        sql.NullFloat64 `db:"volume"`
 	Orderable     sql.NullBool    `db:"orderable"`
 	Consumed      sql.NullBool    `db:"consumed"`
-	Consumed_by   sql.NullString  `db:"consumed_by"`
+	ConsumedBy    sql.NullString  `db:"consumed_by"`
 	ConsumedTime  sql.NullTime    `db:"consumed_time"`
 	ImageURL      sql.NullString  `db:"image_url"`
 }
@@ -29,8 +29,8 @@ type Inventory struct {
 type Beer struct {
 	Name          string         `json:"name"`
 	ProductNumber int64          `json:"product_number"`
-	ConsumedTime  sql.NullTime   `db:"consumed_time"`
-	Consumed_by   sql.NullString `db:"consumed_by"`
+	ConsumedTime  sql.NullTime   `json:"consumed_time"`
+	ConsumedBy    sql.NullString `json:"consumed_by"`
 	Volume        float64        `json:"volume"`
 	ImageURL      string         `json:"image_url"`
 }
@@ -124,6 +124,7 @@ func (d *DBobject) GetNLastConsumed(n int64) ([]Beer, error) {
 			Name:          beer.Name.String,
 			ProductNumber: beer.ProductNumber.Int64,
 			ConsumedTime:  beer.ConsumedTime,
+			ConsumedBy:    beer.ConsumedBy,
 			Volume:        beer.Volume.Float64,
 			ImageURL:      beer.ImageURL.String,
 		})
