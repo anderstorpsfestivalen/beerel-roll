@@ -6,5 +6,6 @@ CREATE TABLE "inventory" (
     consumed BOOLEAN,
     consumed_by TEXT,
     consumed_time DATETIME,
-    image_url TEXT
+    image_url TEXT,
+    rejected TEXT
 );

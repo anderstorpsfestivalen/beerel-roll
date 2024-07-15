@@ -24,6 +24,7 @@ type Inventory struct {
 	ConsumedBy    sql.NullString  `db:"consumed_by"`
 	ConsumedTime  sql.NullTime    `db:"consumed_time"`
 	ImageURL      sql.NullString  `db:"image_url"`
+	Rejected      sql.NullString  `db:"rejected"`
 }
 
 type Beer struct {
@@ -33,6 +34,7 @@ type Beer struct {
 	ConsumedBy    sql.NullString `json:"consumed_by"`
 	Volume        float64        `json:"volume"`
 	ImageURL      string         `json:"image_url"`
+	Rejected      string         `json:"rejected"`
 }
 
 func Open(dbPath string) DBobject {
@@ -104,6 +106,7 @@ func (d *DBobject) GetRandBeer() (Beer, error) {
 		ConsumedTime:  databaseResp.ConsumedTime,
 		Volume:        databaseResp.Volume.Float64,
 		ImageURL:      databaseResp.ImageURL.String,
+		Rejected:      databaseResp.Rejected.String,
 	}, nil
 }
 
@@ -136,6 +139,16 @@ func (d *DBobject) GetNLastConsumed(n int64) ([]Beer, error) {
 func (d *DBobject) ConsumeBeer(product_number int64, consumer string) error {
 
 	dbQuery := `UPDATE inventory SET consumed = 'true', consumed_by = $1, consumed_time = CURRENT_TIMESTAMP WHERE product_number = $2`
+
+	_, err := d.db.Exec(dbQuery, consumer, product_number)
+
+	return err
+
+}
+
+func (d *DBobject) RejectBeer(product_number int64, consumer string) error {
+
+	dbQuery := `UPDATE inventory SET rejected = $1 WHERE product_number = $2`
 
 	_, err := d.db.Exec(dbQuery, consumer, product_number)
 

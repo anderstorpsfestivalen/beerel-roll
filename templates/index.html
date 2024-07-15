@@ -29,6 +29,18 @@
 
 					selectedBeer = data;
 
+					if (selectedBeer.rejected != "") {
+						document.getElementById("reject-button").style.display =
+							"none";
+						document.querySelector(
+							"blockquote"
+						).innerText = `Previously rejected by ${selectedBeer.rejected}, sorry!`;
+					} else {
+						document.getElementById("reject-button").style.display =
+							"block";
+						document.querySelector("blockquote").innerText = "";
+					}
+
 					document.getElementById("beerimg").src =
 						selectedBeer.image_url;
 
@@ -48,7 +60,6 @@
 				switch (state) {
 					// Default state
 					case "start":
-						selectedDrinker = null;
 						document.getElementById("user-select").style.display =
 							"block";
 						document.getElementById(
@@ -75,7 +86,7 @@
 				}
 			}
 
-			async function acceptName() {
+			async function acceptBeer() {
 				try {
 					const response = await fetch("accept", {
 						method: "POST",
@@ -88,8 +99,9 @@
 						}),
 					});
 
-					selectedBeer = null;
 					const data = await response.json();
+					selectedBeer = null;
+					selectedDrinker = null;
 
 					if (response.status == 200) {
 						await getRecentBeers();
@@ -131,8 +143,33 @@
 				}
 			}
 
-			function declineName() {
-				setState("start");
+			async function rejectBeer() {
+				try {
+					const response = await fetch("reject", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							pid: selectedBeer.product_number,
+							consumer: selectedDrinker,
+						}),
+					});
+
+					const data = await response.json();
+					selectedBeer = null;
+					selectedDrinker = null;
+
+					if (response.status == 200) {
+						await getRecentBeers();
+						setState("start");
+					} else {
+						alert("Failed to reject the beer.");
+					}
+				} catch (error) {
+					console.error("Error accepting the name:", error);
+					alert("Failed to accept the name.");
+				}
 			}
 
 			document.addEventListener("DOMContentLoaded", async () => {
@@ -181,17 +218,24 @@
 					<div class="btn-group-vertical" style="width: 100%">
 						<button
 							class="btn btn-block btn-success mr-2"
-							onclick="acceptName()"
+							onclick="acceptBeer()"
 						>
 							DRINK
 						</button>
+
 						<button
 							class="btn btn-block btn-danger"
-							onclick="declineName()"
+							id="reject-button"
+							onclick="rejectBeer()"
 						>
 							Decline
 						</button>
 					</div>
+					<figure class="text-center">
+						<blockquote class="blockquote">
+							<p>Previously rejected by X, sorry!</p>
+						</blockquote>
+					</figure>
 				</div>
 			</div>
 

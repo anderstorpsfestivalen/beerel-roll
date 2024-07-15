@@ -46,6 +46,25 @@ func Start(d *db.DBobject) {
 			}
 			c.JSON(http.StatusOK, gin.H{"status": "success"})
 		} else {
+			log.Fatalf("DBERR: %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
+	})
+
+	// Endpoint to reject a roll
+	r.POST("/reject", func(c *gin.Context) {
+		// Declare a variable of the struct type
+		data := ProductNumber
+		// Bind JSON request body to the variable
+		if err := c.ShouldBindJSON(&data); err == nil {
+			// Process the data
+			err := d.RejectBeer(data.Pid, data.Consumer)
+			if err != nil {
+				log.Fatalf("Could not remove from DB: %v", err)
+			}
+			c.JSON(http.StatusOK, gin.H{"status": "success"})
+		} else {
+			log.Fatalf("DBERR: %v", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
 	})
